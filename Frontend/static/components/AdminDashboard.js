@@ -64,6 +64,27 @@ const AdminDashboard = {
                             </div>
                         </div>
                     </div>
+                    <div class="card mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Export Service Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Download a comprehensive CSV report containing all service requests with detailed information including:</p>
+                            <ul>
+                                <li>Service details (ID, name)</li>
+                                <li>Customer information</li>
+                                <li>Professional assignment</li>
+                                <li>Request dates and status</li>
+                                <li>Ratings, reviews, and remarks</li>
+                            </ul>
+                            <div class="text-end mt-3">
+                                <button @click="csvExport" class="btn btn-primary">
+                                    <i class="bi bi-download me-2"></i>Download CSV Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="card mb-5">
                     <div class="card-header bg-white d-flex align-items-center">
@@ -279,8 +300,76 @@ const AdminDashboard = {
                 console.error('Error rejecting professional:', error);
                 alert('Error: ' + error.message);
             });
+        },
+        csvExport() {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = "Processing...";
+            
+            fetch('/api/export')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.task_id) {
+
+                        this.checkTaskStatus(data.task_id);
+                    } else {
+                        throw new Error('No task ID returned');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error exporting CSV:', error);
+                    alert('Error exporting CSV data');
+
+                    button.disabled = false;
+                    button.textContent = originalText;
+                });
+        },
+        
+        checkTaskStatus(taskId) {
+            fetch(`/api/csv_result/${taskId}`)
+                .then(response => {
+                    if (response.status === 202) {
+
+                        setTimeout(() => this.checkTaskStatus(taskId), 1000);
+                        return null;
+                    } else if (response.status === 200) {
+
+                        window.location.href = `/api/csv_result/${taskId}`;
+                        return null;
+                    } else {
+                        return response.json();
+                    }
+                })
+                .then(data => {
+                    if (data && data.error) {
+                        console.error('Error in task:', data.error);
+                        alert('Error generating CSV: ' + data.error);
+                    }
+                    // Reset button state
+                    const button = document.querySelector('button[disabled]');
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = "Download CSV";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking task status:', error);
+                    alert('Error checking task status');
+                    // Reset button state
+                    const button = document.querySelector('button[disabled]');
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent = "Download CSV";
+                    }
+                });
         }
-    },
+        },
     mounted: function() {
         document.title = "Admin Dashboard - Rise Home Services";
         this.fetchDashboardData();

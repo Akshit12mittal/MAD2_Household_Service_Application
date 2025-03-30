@@ -4,6 +4,9 @@ from flask import current_app as app, jsonify, request
 from flask_security import auth_required, roles_required, current_user, hash_password, verify_password
 from flask import render_template, send_from_directory
 from datetime import datetime
+from celery.result import AsyncResult
+from .tasks import daily_professional_reminders, monthly_customer_report, csv_report
+
 
 # HOME PAGE- http://127.0.0.1:5000/
 # CUSTOMER REGISTRATION- http://127.0.0.1:5000/api/register/customer
@@ -958,6 +961,44 @@ def delete_service_request(request_id):
         return jsonify({"message": f"Failed to delete service request: {str(e)}"}), 500
     
 
+# Export Service Requests as CSV (Admin triggered)
+@app.route('/api/export', methods=['GET'])
+# @auth_required('token')
+# @roles_required('admin')
+def export_service_requests():
+    try:        
+        result = csv_report.delay()
+        return jsonify({
+            "message": "CSV export started successfully",
+            "task_id": result.id
+        }), 200
+    except Exception as e:
+        return jsonify({"message": f"Failed to start export: {str(e)}"}), 500
+
+
+@app.route('/api/csv_result/<task_id>', methods=['GET'])
+# @auth_required('token')
+# @roles_required('admin')
+def csv_result(task_id):
+    try:
+        result = AsyncResult(task_id)
+        if result.ready():
+            if result.successful():
+                filename = result.get()
+                # Make sure the path is correct - adjust if needed
+                return send_from_directory('Frontend/static', filename, as_attachment=True)
+            else:
+                return jsonify({
+                    "status": "Failed", 
+                    "error": str(result.result)
+                }), 500
+        else:
+            return jsonify({
+                "status": "Processing", 
+                "task_id": task_id
+            }), 202
+    except Exception as e:
+        return jsonify({"message": f"Error checking task status: {str(e)}"}), 500
 
 
 

@@ -5,6 +5,8 @@ from Backend.config import LocalDevelopmentConfig
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security import hash_password
 from flask_security import login_user
+from Backend.celery_init import celery_init_app
+from celery.schedules import crontab
 
 def create_app():
     app = Flask(__name__,template_folder='Frontend',static_folder='Frontend/static')
@@ -16,6 +18,9 @@ def create_app():
     return app
 
 app = create_app()
+celery = celery_init_app(app)
+celery.autodiscover_tasks()
+
 
 with app.app_context():
     db.create_all()
@@ -34,11 +39,24 @@ with app.app_context():
             roles=['admin'],
             phone="1234567890",
             active=True)
+        db.session.commit()
         
 
 from Backend.routes import *
 
+@celery.on_after_finalize.connect 
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(
+        crontab(minute = '*/2'),
+        daily_professional_reminders.s(),
+        name="Daily Reminder"
+    )
+
+    sender.add_periodic_task(
+        crontab(minute = '*/2'),
+        monthly_customer_report.s(),
+        name="Monthly Reminder" 
+    )
 if __name__ == '__main__':
     # run the app on localhost:5000
     app.run(host='localhost', port=5000, debug=True)
-    # app.run()
