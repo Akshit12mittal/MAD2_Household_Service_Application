@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise Home Services</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@3/dist/vue-router.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(90deg, rgba(0,145,63,0.9) 0%, rgba(200,231,23,0.7) 100%), url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center/cover;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <!--components -->
+    <script src="{{ url_for('static', filename='components/Home.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/Login.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/Navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/Footer.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/CustomerRegister.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/ProfessionalRegister.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/Services.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/AdminDashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/AdminUsersList.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/AdminProfessionalsList.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/AdminServiceManagementList.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/AdminServiceRequestsList.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/AboutUs.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/CustomerDashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/CustomerProfile.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/CustomerServiceRequests.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/CustomerServiceRequestDetails.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/CustomerCreateRequest.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/ProfessionalDashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/ProfessionalProfile.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/ProfessionalServiceRequests.js') }}"></script>
+    <script src="{{ url_for('static', filename='components/ProfessionalServiceRequestDetails.js') }}"></script>
+
+    <!--main script-->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
